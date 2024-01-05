@@ -216,7 +216,7 @@ def __read_config(cv: int, path: PathLike) -> Dict[str, str]:
     return out
 
 
-def __run_configmerge(cv: int, out_path: PathLike, in_path: PathLike, changes_paths: List[PathLike]):
+def __run_configmerge(cv: int, out_path: PathLike, in_path: PathLike, changes_paths: List[PathLike], check_against_current: Optional[bool] = False):
     # read current running config
     os.system("zcat /proc/config.gz > cur_config")
     __print(cv, 3, f"grabbed current config from /proc/config.gz to {os.curdir}/cur_config")
@@ -247,7 +247,7 @@ def __run_configmerge(cv: int, out_path: PathLike, in_path: PathLike, changes_pa
                     __print(cv, -2, f"config_merge: key '{key}' is specified for change to '{val}', but value is already '{val}'. no change")
                 else:
                     __print(cv, 2, f"config_merge: changed key '{key}' from '{oldval}' to '{val}'")
-            else:
+            elif check_against_current:
                 # no change found. check for conflicts with current
                 if key not in current:
                     __print(cv, 2, f"config_merge: new kernel config has key '{key}' that is not in current config (has val '{val}')")
@@ -427,18 +427,19 @@ def __flatten_dir(path: str, _depth: int = 0) -> list:
 
 
 def run(
-    base_kernel_name:        str,
-    new_kernel_name:         str,
-    description:             Optional[str]             = None,
-    makepkg_flags:           Optional[str]             = '',
-    output_folder:           Optional[PathLike]        = '.',
-    config_overwrite_paths:  Optional[List[PathLike]]  = [],
-    patches_paths:           Optional[List[PathLike]]  = [],
-    num_cores:               Optional[int]             = 0,
-    verbosity:               Optional[int]             = 1,
-    should_make_docs:        Optional[bool]            = False,
-    should_modprobed_db:     Optional[bool]            = False,
-    should_interrupt:        Optional[bool]            = False
+    base_kernel_name:                   str,
+    new_kernel_name:                    str,
+    description:                        Optional[str]             = None,
+    makepkg_flags:                      Optional[str]             = '',
+    output_folder:                      Optional[PathLike]        = '.',
+    config_overwrite_paths:             Optional[List[PathLike]]  = [],
+    patches_paths:                      Optional[List[PathLike]]  = [],
+    num_cores:                          Optional[int]             = 0,
+    verbosity:                          Optional[int]             = 1,
+    should_make_docs:                   Optional[bool]            = False,
+    should_modprobed_db:                Optional[bool]            = False,
+    should_interrupt:                   Optional[bool]            = False,
+    check_base_config_against_current:  Optional[bool]            = False
 ) -> int:
     """ Runs the module based on the given settings. """
 
@@ -511,7 +512,7 @@ def run(
         if l:=len(config_overwrite_paths):
             os.rename(f"{new_kernel_name}/config", "unmod_config")
             __print(verbosity, 2, f"... Unmodified config moved to {os.curdir}/unmod_config")
-            __run_configmerge(verbosity, f"{new_kernel_name}/config", "unmod_config", config_overwrite_paths)
+            __run_configmerge(verbosity, f"{new_kernel_name}/config", "unmod_config", config_overwrite_paths, check_base_config_against_current)
         else:
             __print(verbosity, 3, "... No config overrides to apply.")
         if should_interrupt: __interrupt("Config changes applied")
