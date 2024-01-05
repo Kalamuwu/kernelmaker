@@ -537,7 +537,7 @@ def run(
         if should_interrupt: __interrupt("Base kernel downloaded. Interrupting just before makepkg runs.")
 
         __print(verbosity, 0, "Running makepkg...")
-        __run_makepkg(verbosity, num_cores, makepkg_flags)
+        __run_makepkg(verbosity, makepkg_flags, num_cores)
         __print(verbosity, 2, f"Moving packages to specified directory '{output_folder}'...")
         # this uses os.system so that we can use * (wildcard) to catch both packages (kernel and headers) regardless of version
         os.system(f'mv "{new_kernel_name}"* "{output_folder}"')
