@@ -45,6 +45,12 @@ conf_parser_group.add_argument(
     required=False,
     dest='patches_paths',
     action='append')
+conf_parser_group.add_argument(
+    "--no-check-current",
+    help="If this flag is present, the vanilla config will not be checked against the current config. This is helpful if you are building from a base kernel different from the one currently running.",
+    required=False,
+    dest='check_base_config_against_current',
+    action='store_true')
 build_parser_group.add_argument(
     "-o", "--output-dir",
     help="The directory to place the kernel and kernel headers into, once made. Unspecified or blank will default to current working directory.",
