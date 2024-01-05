@@ -254,7 +254,7 @@ def __run_configmerge(cv: int, out_path: PathLike, in_path: PathLike, changes_pa
                 else:
                     curval = current.pop(key)
                     if val != curval:
-                        __print(cv, 2, f"config_merge: key '{key}' changed, currently using '{curval}', vanilla config uses '{val}'")
+                        __print(cv, -2, f"config_merge: key '{key}' changed, currently using '{curval}', vanilla config uses '{val}'")
                         if cv > -2 and __prompt("use current val instead of vanilla?", default=False): val = curval
             # write to outfile
             if val is None: file.write(f"# {key} is not set\n")
