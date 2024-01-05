@@ -126,5 +126,8 @@ q = min(max(int(q), 0), 3)
 args['verbosity'] = v - q
 if args['verbosity'] == 3: args['should_interrupt'] = True
 
+# this flag means DONT set that value
+args['check_base_config_against_current'] = not args['check_base_config_against_current']
+
 # ladies and gentleman, at long last, the Big Event, live and in the flesh. the run function.
 run(**args)
